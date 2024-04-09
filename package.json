@@ -1,0 +1,17 @@
+{
+  "name": "y",
+  "version": "1.0.0",
+  "description": "serverless, lambda, python, postgres",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sls:offline": "sls offline  --noTimeout"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serverless-offline": "^13.3.3",
+    "serverless-offline-python": "^3.22.3",
+    "serverless-python-requirements": "^6.1.0"
+  }
+}

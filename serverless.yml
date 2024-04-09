@@ -1,0 +1,66 @@
+# serverless.yml
+
+# This is a configuration file for a Serverless Framework project.
+# It defines the AWS Lambda function and its associated resources, such as API Gateway endpoints and IAM permissions.
+
+service: lambda-serverless
+
+# Specifies the version of the Serverless Framework being used.
+frameworkVersion: '3'
+
+provider:
+  # Defines the provider-specific configurations for AWS.
+  # Here, it specifies the runtime (python3.11), memory size, timeout, region, architecture, and IAM permissions.
+  name: aws
+  runtime: python3.11
+  memorySize: 512
+  timeout: 10
+  region: us-east-1
+  architecture: x86_64 # x86_64 or arm64
+  apiGateway: # API Gateway configuration
+    binaryMediaTypes:
+      - '*/*'
+  iam: # IAM permissions for the role of the lambda
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - s3:PutObject
+            - s3:PutObjectAcl
+          Resource:
+            [
+              'arn:aws:s3:::cq-platform-storage-stag/*',
+              'arn:aws:s3:::cq-platform-storage-prod/*',
+            ]
+        - Effect: Allow
+          Action:
+            - states:StartExecution
+          Resource: 'arn:aws:states:us-east-1:709745895802:stateMachine:MyStateMachine-mjcagf9gf'
+
+plugins:
+  # Lists the plugins being used in the project.
+  # In this case, serverless-offline and serverless-python-requirements plugins are included.
+  - serverless-offline
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    # Contains custom configurations related to Python requirements.
+    useStaticCache: false
+    useDownloadCache: false
+    pipCmdExtraArgs:
+      - '--platform manylinux2014_x86_64'
+      - '--implementation cp'
+      - '--python-version 3.11'
+      - '--only-binary=:all:'
+      - '--upgrade'
+
+functions:
+  # Defines AWS Lambda functions in the project.
+  # In this case, there's one function named main.
+  # It specifies the runtime (python3.11), handler function (src/main.handler), and the event that triggers the function (HTTP POST request to /main endpoint).
+  main:
+    runtime: python3.11
+    handler: src/main.handler # name of the handler function in the src folder
+    events:
+      - http: POST /main
